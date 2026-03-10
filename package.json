@@ -1,0 +1,28 @@
+{
+  "name": "simple-meal-management-system",
+  "version": "1.0.0",
+  "description": "Simple Hostel MEal Magement System Api For The Hostel Management System Frontend",
+  "keywords": [
+    "node"
+  ],
+  "license": "ISC",
+  "author": "Abu Sayed",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.ts",
+    "start": "node src/index.js"
+
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "nodemon": "^3.1.14"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.4.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
+  }
+}
