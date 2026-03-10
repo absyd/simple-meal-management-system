@@ -8,11 +8,11 @@
   "license": "ISC",
   "author": "Abu Sayed",
   "type": "module",
-  "main": "index.js",
+  "main": "src/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.ts",
-    "start": "node src/index.js"
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
 
   },
   "dependencies": {
