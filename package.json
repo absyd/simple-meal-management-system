@@ -12,11 +12,23 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
-
+    "start": "node src/server.js",
+    "setup:admin": "node src/scripts/setup.js create-admin",
+    "setup:sample": "node src/scripts/setup.js create-sample-users",
+    "setup:clear": "node src/scripts/setup.js clear-data",
+    "setup:all": "npm run setup:admin && npm run setup:sample"
   },
   "dependencies": {
     "express": "^5.2.1",
+    "mongoose": "^8.0.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "joi": "^17.11.0",
+    "uuid": "^9.0.1",
     "nodemon": "^3.1.14"
   },
   "devDependencies": {
