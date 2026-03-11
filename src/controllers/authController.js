@@ -124,7 +124,8 @@ export const login = async (req, res) => {
       message: 'Login successful',
       data: {
         user: user.toPublicJSON(),
-        token
+        token,
+        must_change_password: user.mustChangePassword()
       }
     });
   } catch (error) {
@@ -229,7 +230,18 @@ export const changePassword = async (req, res) => {
 
     // Update password
     req.user.password_hash = new_password; // Will be hashed by pre-save middleware
+    req.user.password_changed = true;
+    req.user.last_password_change = new Date();
     await req.user.save();
+
+    // Send password change notification
+    try {
+      const { sendPasswordChangeNotification } = await import('../services/emailService.js');
+      await sendPasswordChangeNotification(req.user.email, req.user.name);
+    } catch (emailError) {
+      console.error('Failed to send password change notification:', emailError);
+      // Continue with password change even if email fails
+    }
 
     res.json({
       success: true,

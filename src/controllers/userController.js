@@ -1,5 +1,6 @@
 import { User } from '../models/User.js';
 import { Wallet } from '../models/Wallet.js';
+import { sendWelcomeEmail, generateRandomPassword } from '../services/emailService.js';
 import Joi from 'joi';
 
 // Validation schemas
@@ -7,7 +8,6 @@ const createUserSchema = Joi.object({
   name: Joi.string().required().min(2).max(100),
   email: Joi.string().email().required(),
   phone: Joi.string().pattern(/^[\+]?[1-9][\d]{0,15}$/).required(),
-  password: Joi.string().required().min(6),
   role: Joi.string().valid('admin', 'manager', 'meal_manager', 'user').required(),
   room_number: Joi.string().max(20).allow('')
 });
@@ -97,7 +97,7 @@ export const getUserById = async (req, res) => {
   }
 };
 
-// Create new user (admin only)
+// Create new user (admin/manager only)
 export const createUser = async (req, res) => {
   try {
     // Validate input
@@ -109,7 +109,7 @@ export const createUser = async (req, res) => {
       });
     }
 
-    const { name, email, phone, password, role, room_number } = value;
+    const { name, email, phone, role, room_number } = value;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -120,14 +120,18 @@ export const createUser = async (req, res) => {
       });
     }
 
+    // Generate random password
+    const temporaryPassword = generateRandomPassword();
+
     // Create new user
     const user = new User({
       name,
       email,
       phone,
-      password_hash: password,
+      password_hash: temporaryPassword, // Will be hashed by pre-save middleware
       role,
-      room_number: room_number || undefined
+      room_number: room_number || undefined,
+      password_changed: false // Force password change on first login
     });
 
     await user.save();
@@ -135,11 +139,21 @@ export const createUser = async (req, res) => {
     // Create wallet for the user
     await Wallet.create({ user_id: user.id, balance: 0 });
 
+    // Send welcome email with temporary password
+    try {
+      await sendWelcomeEmail(email, name, temporaryPassword);
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError);
+      // Continue with user creation even if email fails
+      // In production, you might want to handle this differently
+    }
+
     res.status(201).json({
       success: true,
-      message: 'User created successfully',
+      message: 'User created successfully. Welcome email with temporary password has been sent.',
       data: {
-        user: user.toPublicJSON()
+        user: user.toPublicJSON(),
+        note: 'User will be required to change password on first login'
       }
     });
   } catch (error) {

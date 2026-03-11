@@ -48,13 +48,19 @@ const userSchema = new mongoose.Schema({
   is_active: {
     type: Boolean,
     default: true
+  },
+  password_changed: {
+    type: Boolean,
+    default: false
+  },
+  last_password_change: {
+    type: Date
   }
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
 // Index for better query performance
-userSchema.index({ email: 1 });
 userSchema.index({ id: 1 });
 userSchema.index({ role: 1 });
 
@@ -101,6 +107,11 @@ userSchema.methods.isManager = function() {
 
 userSchema.methods.isMealManager = function() {
   return ['admin', 'manager', 'meal_manager'].includes(this.role);
+};
+
+// Password change requirement method
+userSchema.methods.mustChangePassword = function() {
+  return !this.password_changed;
 };
 
 export const User = mongoose.model('User', userSchema);

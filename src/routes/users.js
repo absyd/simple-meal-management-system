@@ -20,8 +20,8 @@ router.get('/statistics', requireManager, getUserStatistics);
 // Get all users (admin/manager only)
 router.get('/', requireManager, getUsers);
 
-// Create new user (admin only)
-router.post('/', requireAdmin, createUser);
+// Create new user (admin/manager only)
+router.post('/', requireManager, createUser);
 
 // Get user by ID (admin/manager only, or own profile)
 router.get('/:id', requireManager, getUserById);

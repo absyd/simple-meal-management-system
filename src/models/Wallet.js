@@ -26,7 +26,6 @@ const walletSchema = new mongoose.Schema({
 
 // Indexes for better query performance
 walletSchema.index({ id: 1 });
-walletSchema.index({ user_id: 1 }, { unique: true });
 
 // Pre-save middleware to validate balance
 walletSchema.pre('save', function(next) {
